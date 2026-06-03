@@ -1,0 +1,41 @@
+# --- Caché de Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# --- Entornos Virtuales Locales ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Archivos del IDE (VS Code / PyCharm) ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# --- Almacenamiento de Datos Binarios y Reportes ---
+# Excluimos las matrices .npy de la evaluación porque son pesadas y locales
+data/*.npy
+# Excluimos los PDFs generados para que no se clonen reportes antiguos
+outputs/*.pdf
+outputs/*.png
+
+# --- Modelos de Inteligencia Artificial Entrenados ---
+# Los archivos .keras y .pkl son binarios pesados. El estándar de Git es no subirlos;
+# cada persona debe generar sus propios cerebros ejecutando 'python train_nn.py'.
+models/cnn_odio_model.keras
+models/tokenizer_cnn.pkl
+models/red_neuronal_odio.pkl
+models/vectorizador_tfidf.pkl
+
+# --- Seguridad e Información Sensible ---
+# Si en el futuro migras tu API_KEY a un archivo de entorno .env, esto lo protege
+.env
+.env.local
