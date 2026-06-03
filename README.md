@@ -6,9 +6,9 @@ Este proyecto implementa una arquitectura híbrida basada en Aprendizaje Profund
 
 ## 👥 Integrantes del Equipo de Desarrollo
 
-* **Miguel Ángel [Apellido]** - Ingeniería en Computación, Facultad de Ingeniería, UNAM.
-* **[Nombre Segundo Integrante] [Apellido]** - Ingeniería en Computación, Facultad de Ingeniería, UNAM.
-* **[Nombre Tercer Integrante] [Apellido]** - Ingeniería en Computación, Facultad de Ingeniería, UNAM.
+* **Miguel Ángel Hernandez Ramirez** 
+* **Pérez Del Angel Joaquín Eduardo** 
+* **[Nombre Tercer Integrante] [Apellido]** 
 
 ---
 
