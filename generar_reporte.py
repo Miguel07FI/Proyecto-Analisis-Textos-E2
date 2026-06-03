@@ -13,6 +13,9 @@ def generar_graficas_dinamicas(total_comentarios, total_odio, datos_tabla):
     Genera gráficas estadísticas en tiempo real basadas en los comentarios 
     analizados para inyectarlas directamente en el cuerpo del PDF.
     """
+    # Asegurar que el directorio de salida existe
+    os.makedirs("outputs", exist_ok=True)
+    
     # Paleta de diseño
     color_odio = "#C0392B"
     color_neutro = "#27AE60"
@@ -42,11 +45,11 @@ def generar_graficas_dinamicas(total_comentarios, total_odio, datos_tabla):
     comentarios_ordenados = sorted(datos_tabla, key=lambda x: x[2], reverse=True)[:5]
     
     indices_top = [f"Id #{item[0]}" for item in comentarios_ordenados]
-    probabilidades_top = [item[2] for item in comentarios_ordenados]
+    probabilities_top = [item[2] for item in comentarios_ordenados]
     
     plt.figure(figsize=(5.5, 3.5))
     # Renderizar barras horizontales
-    barras = plt.barh(indices_top, probabilidades_top, color=color_odio, edgecolor='black', height=0.5)
+    barras = plt.barh(indices_top, probabilities_top, color=color_odio, edgecolor='black', height=0.5)
     
     # Añadir las etiquetas de porcentaje al final de cada barra
     for barra in barras:
@@ -71,8 +74,11 @@ def generar_graficas_dinamicas(total_comentarios, total_odio, datos_tabla):
 def crear_reporte_pdf(url_video, total_comentarios, total_odio, indice_global, datos_tabla, ruta_pdf="outputs/reporte_auditoria.pdf"):
     """
     Genera un informe ejecutivo formal en PDF con la hoja de estilos de la UNAM,
-    tablas de inferencia, métricas globales y las gráficas en tiempo real instaladas.
+    tablas de inferencia, métricas globales, gráficas y un veredicto final automatizado.
     """
+    # Asegurar que el directorio de salida existe
+    os.makedirs("outputs", exist_ok=True)
+
     # 0. Lanzar el generador de imágenes dinámicas
     ruta_pie, ruta_barras = generar_graficas_dinamicas(total_comentarios, total_odio, datos_tabla)
 
@@ -127,8 +133,8 @@ def crear_reporte_pdf(url_video, total_comentarios, total_odio, indice_global, d
     
     # 5. RESUMEN EJECUTIVO Y METADATOS
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    estado_ataque = "ALTA PROBABILIDAD (ATAQUE DE ODIO DETECTADO)" if indice_global >= 40.0 else "PROBABILIDAD MODERADA (MONITORIZACIÓN SUGERIDA)" if indice_global >= 15.0 else "BAJA PROBABILIDAD (ENTORNO SEGURO)"
-    color_estado = rojo_alerta if indice_global >= 40.0 else verde_seguro
+    estado_ataque = "ALTA PROBABILIDAD (ATAQUE DE ODIO DETECTADO)" if indice_global > 35.0 else "PROBABILIDAD MODERADA (MONITORIZACIÓN SUGERIDA)" if indice_global >= 15.0 else "BAJA PROBABILIDAD (ENTORNO SEGURO)"
+    color_estado = rojo_alerta if indice_global > 35.0 else verde_seguro
     
     html_metadatos = f"""
     <b>Fecha de Auditoría:</b> {fecha_actual}<br/>
@@ -186,7 +192,7 @@ def crear_reporte_pdf(url_video, total_comentarios, total_odio, indice_global, d
     
     cuerpo_tabla_muestras = [header_tabla_muestras]
     # Mostrar solo una muestra de hasta los primeros 10 para no saturar de hojas el PDF
-    for idx, texto, prob, dictamen in datos_tabla[:10]:
+    for idx, texto, prob, dictamen in datos_tabla[:50]:
         texto_corto = texto[:85] + "..." if len(texto) > 85 else texto
         c_dictamen = f"<font color='red'><b>{dictamen}</b></font>" if "ODIO" in dictamen else f"<font color='green'>{dictamen}</font>"
         
@@ -209,7 +215,72 @@ def crear_reporte_pdf(url_video, total_comentarios, total_odio, indice_global, d
     
     # Envolver la tabla en un KeepTogether para que se imprima limpia sin romperse a la mitad
     story.append(KeepTogether([t_muestras]))
+    story.append(Spacer(1, 14))
     
-    # 9. Construcción final del PDF
+    # 9. SECCIÓN: VEREDICTO FINAL INSTITUCIONAL
+    story.append(Paragraph("Conclusión y Veredicto del Sistema de Auditoría", style_h2))
+    
+    # Lógica de evaluación basada en el umbral solicitado del 35%
+    if indice_global > 35.0:
+        titulo_veredicto = "<font color='red'><b>VEREDICTO: ATAQUE DE ODIO DETECTADO</b></font>"
+        cuerpo_veredicto = f"""
+        El análisis algorítmico automatizado ha determinado que el espacio de interacción de este video 
+        <b>está sufriendo un ataque de odio detectado</b>, superando el umbral crítico establecido del 35.0% 
+        (Índice Global: {indice_global:.2f}%). Las métricas reflejan hostilidad sistemática y un entorno perjudicial. 
+        Se sugiere activar protocolos institucionales de moderación de comentarios.
+        """
+        color_borde_veredicto = rojo_alerta
+    else:
+        titulo_veredicto = "<font color='green'><b>VEREDICTO: VIDEO ACEPTADO POR LOS VISORES</b></font>"
+        cuerpo_veredicto = f"""
+        El análisis algorítmico automatizado concluye que el video <b>es aceptado por los visores</b> y mantiene 
+        un entorno seguro. El volumen de interacciones hostiles se sitúa por debajo del límite de riesgo tolerado 
+        (Índice Global: {indice_global:.2f}% &le; 35.0%), demostrando una convivencia digital saludable en la sección de comentarios.
+        """
+        color_borde_veredicto = verde_seguro
+
+    # Estilos específicos para la caja informativa del veredicto
+    style_veredicto_titulo = ParagraphStyle(
+        'VeredictoTitulo', parent=styles['Normal'], fontSize=11, leading=14, fontName='Helvetica-Bold', spaceAfter=4
+    )
+    style_veredicto_cuerpo = ParagraphStyle(
+        'VeredictoCuerpo', parent=styles['Normal'], fontSize=9.5, leading=13, textColor=gris_oscuro
+    )
+
+    # Construcción de la caja visual del veredicto usando una Tabla
+    tabla_veredicto_data = [
+        [Paragraph(titulo_veredicto, style_veredicto_titulo)],
+        [Paragraph(cuerpo_veredicto, style_veredicto_cuerpo)]
+    ]
+    t_veredicto = Table(tabla_veredicto_data, colWidths=[532])
+    t_veredicto.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), gris_claro),
+        ('BOX', (0,0), (-1,-1), 1.5, color_borde_veredicto),
+        ('TOPPADDING', (0,0), (-1,-1), 8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('LEFTPADDING', (0,0), (-1,-1), 12),
+        ('RIGHTPADDING', (0,0), (-1,-1), 12),
+    ]))
+    
+    # Asegurar que toda la conclusión se mantenga unida y limpia al final de la página
+    story.append(KeepTogether([t_veredicto]))
+    
+    # 10. Construcción final del PDF
     doc.build(story)
     print(f"📄 [PDF COMPILER]: Reporte ejecutivo institucional generado con éxito en '{ruta_pdf}'.")
+
+# --- Bloque de prueba opcional para verificar funcionamiento ---
+if __name__ == "__main__":
+    # Datos dummy para simular una ejecución directa del script
+    mock_comentarios = [
+        (1, "Este video es una completa basura, ojalá borren el canal.", 89.5, "DISCURSO_ODIO"),
+        (2, "Excelente explicación profesor, me sirvió mucho para mi examen.", 4.2, "NEUTRO"),
+        (3, "No puedo creer que alguien apoye esto, son todos unos idiotas.", 91.2, "DISCURSO_ODIO"),
+        (4, "Me parece un enfoque interesante, aunque discrepo en el minuto 3.", 12.0, "NEUTRO"),
+        (5, "Ojalá se mueran todos los que hicieron este proyecto.", 98.4, "DISCURSO_ODIO"),
+    ]
+    print("Probando generación con un índice crítico (Ataque)...")
+    crear_reporte_pdf("https://youtube.com/watch?v=PruebaOdio", 5, 3, 60.0, mock_comentarios, "outputs/prueba_ataque.pdf")
+    
+    print("\nProbando generación con un índice saludable (Aceptado)...")
+    crear_reporte_pdf("https://youtube.com/watch?v=PruebaOk", 5, 0, 0.0, mock_comentarios, "outputs/prueba_aceptado.pdf")

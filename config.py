@@ -3,7 +3,7 @@ import os
 import re
 
 # Credenciales de API de Google Cloud Platform
-YOUTUBE_API_KEY = "AIzaSyAlSvJpd7QpETzNQLaj-dOAdq3YUyDyrW8"
+YOUTUBE_API_KEY = "AIzaSyDd4oV-Q2UP_X91zXZOgWc7NWfCnta1CZQ"
 
 # Infraestructura de almacenamiento local
 DATA_DIR = "data"
