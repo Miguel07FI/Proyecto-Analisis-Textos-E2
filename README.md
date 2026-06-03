@@ -112,5 +112,15 @@ Inicie el panel interactivo del sistema para evaluar registros sintéticos local
 ```bash
 python main.py
 ```
+## 🖥️ Operación de la Interfaz Gráfica (Dashboard SADOW)
 
-Al finalizar el análisis del paso D, la suite compilará de forma automática el informe institucional en la ruta `outputs/reporte_auditoria.pdf`, integrando las tablas de inferencia estadística y las representaciones gráficas del estado de hostilidad del sitio.
+Al ejecutar el orquestador principal del sistema (`python main.py`), se desplegará una interfaz gráfica de usuario (GUI) automatizada de alta fidelidad, diseñada bajo los estándares estéticos institucionales de la UNAM. 
+
+Para activar el motor de inferencia profunda, siga las instrucciones de uso:
+
+1. **Inserción del Recurso Web (Input):** Localice el campo de texto superior titulado *"Inserte la URL del video de YouTube a auditar"*. Copie la dirección web completa de cualquier video desde la barra de su navegador (por ejemplo: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`) y péguela en el contenedor.
+2. **Procesamiento de Flujos Disgregados:** Haga clic en el botón **"INICIAR AUDITORÍA E INFERENCIA"**. 
+3. **Mapeo y Ejecución Asíncrona:** * El sistema aislará de forma sintáctica el identificador único del video (`video_id`) y se conectará de manera directa al protocolo API de Google para realizar la extracción de datos en vivo.
+   * La interfaz iniciará una barra de progreso indeterminada. Gracias a la concurrencia multihilo del sistema (`threading`), la ventana permanecerá completamente reactiva y fluida mientras la **Red Neuronal Convolucional (CNN 1D)** procesa los comentarios en segundo plano.
+4. **Resultados e Indicadores de Control:** Al finalizar la tokenización y la evaluación de tensores, la GUI actualizará de forma dinámica su cuadro de mando (KPIs cuantitativos) y emitirá un veredicto visual inmediato (Verde para entornos seguros o Rojo para ataques de odio coordinados), compilando en simultáneo el reporte formal de auditoría en la carpeta de salidas\
+5. Al final, si todo es correcto el sistema imprimira un mensaje de proceso exitoso y se generaran las graficas y reporte de analsis final en la carprta de outputs del poryecto
