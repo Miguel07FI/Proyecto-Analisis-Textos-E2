@@ -5,25 +5,34 @@ from googleapiclient.discovery import build
 from config import YOUTUBE_API_KEY, RE_LEXICON
 
 def limpiar_texto(texto):
-    """Limpia el texto eliminando caracteres especiales y dejando solo minúsculas."""
+    """
+    Normaliza el texto de entrada removiendo caracteres especiales,
+    elementos de puntuacion y forzando codificacion en minusculas.
+    """
     if not isinstance(texto, str):
         return ""
     texto = texto.lower()
-    texto = re.sub(r'[^a-zA-ZáéíóúñÁÉÍÓÚÑ𠖇 ]', '', texto)
+    texto = re.sub(r'[^a-zA-ZáéíóúñÁÉÍÓÚÑ ]', '', texto)
     return texto.strip()
 
 def calcular_densidad_insultos(texto_limpio):
-    """Calcula cuántas palabras del léxico especializado aparecen en el texto."""
+    """
+    Cuantifica la frecuencia absoluta y calcula la densidad estadistica
+    de coincidencias basadas en el automata de expresiones regulares.
+    """
     if not texto_limpio:
         return 0, 0.0
     palabras = texto_limpio.split()
     coincidencias = RE_LEXICON.findall(texto_limpio)
     conteo = len(coincidencias)
     densidad = conteo / len(palabras) if palabras else 0.0
-    return conteo, densidad
+    return conteo, density
 
 def extraer_id_video(url):
-    """Extrae el ID único de un video a partir de su URL de YouTube."""
+    """
+    Ejecuta el analisis sintactico de una URL de la plataforma para 
+    aislar y extraer el identificador alfanumerico unico del recurso.
+    """
     url_data = urlparse.urlparse(url)
     query = urlparse.parse_qs(url_data.query)
     video_id = query.get("v")
@@ -35,23 +44,23 @@ def extraer_id_video(url):
 
 def extraer_comentarios_de_link(url_enlace):
     """
-    Se conecta a la API de YouTube usando tu clave, extrae los comentarios 
-    reales del video y los devuelve en una lista de texto plano.
+    Establece conexion sincrona con el protocolo remoto de la API de YouTube,
+    recuperando los hilos de publicaciones asociados al identificador del video.
     """
     video_id = extraer_id_video(url_enlace)
     if not video_id:
-        print("❌ URL de YouTube no válida o no se pudo extraer el ID del video.")
+        print("ERROR: Sintaxis de URL no valida o identificador de recurso ausente.")
         return []
 
     try:
-        # Inicializar el servicio de la API de Google con tu llave guardada
+        # Instanciacion del servicio de consulta bajo el protocolo cliente-servidor
         youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
         
-        # Solicitar los hilos de comentarios reales del video
+        # Peticion estructurada de transferencia de estado de recursos (REST)
         respuesta = youtube.commentThreads().list(
             part='snippet',
             videoId=video_id,
-            maxResults=50,  # Extraer los últimos 50 comentarios reales de la gente
+            maxResults=50,  
             textFormat='plainText'
         ).execute()
 
@@ -62,7 +71,7 @@ def extraer_comentarios_de_link(url_enlace):
             
         return comentarios_reales
 
-    except Exception as e:
-        print(f"❌ Error al consultar la API de YouTube: {e}")
-        print("Verifica tu conexión a internet o que tu YOUTUBE_API_KEY en config.py sea la correcta.")
+    except Exception as error:
+        print(f"ERROR: Fallo en la resolucion de la peticion del servicio web: {error}")
+        print("Verifique las credenciales de autenticacion de red (YOUTUBE_API_KEY).")
         return []
