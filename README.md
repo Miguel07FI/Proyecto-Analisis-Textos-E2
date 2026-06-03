@@ -6,8 +6,10 @@ Este proyecto implementa una arquitectura híbrida basada en Aprendizaje Profund
 
 ## 👥 Integrantes del Equipo de Desarrollo
 
-* **Miguel Ángel Hernandez Ramirez** 
-* **Pérez Del Angel Joaquín Eduardo** 
+* **Miguel Ángel Hernandez Ramirez**
+* miguelhernandez0532@gmail.com
+* **Pérez Del Angel Joaquín Eduardo**
+* eduardodelangel17@outlook.com
 * **[Nombre Tercer Integrante] [Apellido]** 
 
 ---
