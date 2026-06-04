@@ -3,25 +3,65 @@ import pandas as pd
 import random
 from config import DATASET_CSV
 
-print("\n[CLI] Generando conjunto de datos sinteticos con ruido linguistico...")
+print("\n[CLI] Generando conjunto de datos masivo expandido para corregir falsos positivos...")
 
-# Matrices lexicas para la construccion de la Clase 1 (Discurso de Odio)
-sujetos = ["Ese usuario", "El creador del video", "La diputada", "Este tipo", "Esa mujer", "El moderador", "Ese hater", "El streamer", "El candidato", "El árbitro"]
-verbos_agresivos = ["es una completa", "demuestra ser una", "se comporta como una", "no es más que una", "resultó ser una"]
-insultos_reales = ["escoria", "lacra", "basura", "rata", "parásito", "plaga", "mierda", "incompetente", "miserable", "inepto", "ignorante", "pendejo", "pendeja", "imbécil", "idiota", "cabrón"]
-conclusiones_odio = ["deberían banearlo ya", "hay que lincharlo entre todos", "da asco que exista", "lárgate de esta plataforma", "ojalá te pase algo malo", "eres un peligro social"]
+# 1. Ampliación de la Clase 1: Discurso de Odio (Matrices Léxicas Multi-Estructura)
+sujetos_odio = [
+    "Ese usuario", "El creador", "Este tipo", "Esa mujer", "El streamer", "El candidato", 
+    "Este ratero", "Ese sinvergüenza", "Pinche perro", "Mugroso resentido", "Esa lacra", 
+    "El político", "Los trabajadores", "Ese mentiroso", "Usurero", "Esa basura", "Gente ignorante"
+]
 
-# Estructuras linguisticas informales para la Clase 0 (Control/No Odio)
+verbos_odio = [
+    "es una completa", "demuestra ser una", "se comporta como una", "no es más que una", 
+    "resultó ser una", "insulta a todos como", "roba y es una", "da asco ver que es una"
+]
+
+insultos_odio = [
+    "escoria", "lacra", "basura", "rata", "parásito", "plaga", "mierda", "incompetente", 
+    "miserable", "inepto", "ignorante", "pendejo", "pendeja", "imbécil", "idiota", "cabrón",
+    "ratero", "sinvergüenza", "chillón", "mentiroso", "manoso", "corrupto", "mediocre"
+]
+
+conclusiones_odio = [
+    "deberían banearlo ya", "hay que lincharlo entre todos", "da asco que exista", 
+    "lárgate de esta plataforma", "ojalá te pase algo malo", "eres un peligro social",
+    "hay que quemar todo", "nadie le cree nada", "debería desaparecer ya"
+]
+
+# Frases crudas completas inspiradas en comentarios reales de internet (Ataques dirigidos)
+frases_odio_directas = [
+    "Quien es este tipo ratero singuenza mugroso tipo resentido ignorante y manoso.",
+    "A este perro mentiroso nadie le cree por chillón.",
+    "Usurero ay que quemar Elektra no comprar nada.",
+    "Malditos corruptos de mierda ojalá se mueran todos.",
+    "Qué pinche asco de persona, una verdadera basura humana.",
+    "Lárguense de aquí malditas plagas nadie los quiere.",
+    "Este delincuente debería estar en la cárcel, escoria social."
+]
+
+# 2. Ampliación de la Clase 0: Mensajes Neutros, Saludos y Control Coloquial
+saludos_y_agradecimientos = [
+    "Hola Wicha te mando saludos y muchas Gracias por tus Noticias.",
+    "Excelente video amigo muchas gracias por compartir la información.",
+    "Saludos cordiales profesor desde la Facultad de Ingeniería.",
+    "Hola buenos días gracias por el gran aporte al canal.",
+    "Hola qué buen contenido me suscribo de inmediato saludos.",
+    "Muchas gracias por mantenernos informados todos los días.",
+    "Hola comunidad espero que tengan una excelente semana bendiciones."
+]
+
 vulgari_casual = [
     "Qué pendejo estoy, olvidé el archivo en la otra computadora.",
     "El examen de la facultad estuvo de la chingada, pero alcancé a pasar.",
     "No mames, está cabrón el tráfico de hoy en la avenida principal.",
     "Qué pendejada acabo de hacer con el café, lo derramé sobre el teclado.",
     "Ya valió madre, se cayó el sistema de la escuela otra vez.",
-    "Está cabrón terminar este proyecto final para el lunes."
+    "Está cabrón terminar este proyecto final para el lunes.",
+    "Puta madre me dolió mucho el golpe en el pie.",
+    "Qué buena peda nos pusimos ayer estuvo chingón."
 ]
 
-# Estructuras linguisticas formales para la Clase 0 (Control/No Odio)
 neutros_academia = [
     "El proyecto final de ingeniería quedó agendada para el próximo lunes.",
     "Recomiendo ampliamente este libro para aprender estructuras de datos.",
@@ -31,40 +71,50 @@ neutros_academia = [
     "El procesamiento de lenguaje natural requiere un análisis estadístico profundo."
 ]
 
-# Inicializacion de semilla estatica para garantizar la reproducibilidad matematica
+# Inicialización de semilla estática para garantizar la reproducibilidad matemática
 random.seed(42)
 registros = []
-total_registros = 12000
+total_registros = 20000  # Aumentamos a 20,000 ejemplos para darle más estabilidad a la CNN
 mitad_registros = total_registros // 2
 
-# Generacion y balanceo de la Clase 1: Discurso de Odio (6,000 instancias)
+# --- GENERACIÓN DE LA CLASE 1: DISCURSO DE ODIO ---
 while len([r for r in registros if r["label"] == 1]) < mitad_registros:
-    # 90% combinatoria explicita, 10% estructuras de hostilidad implicita sin lexico directo
-    if random.random() > 0.1:
-        txt = f"{random.choice(sujetos)} {random.choice(verbos_agresivos)} {random.choice(insultos_reales)} y {random.choice(conclusiones_odio)}."
+    prob = random.random()
+    if prob < 0.6:
+        # Combinatoria clásica dinámica
+        txt = f"{random.choice(sujetos_odio)} {random.choice(verbos_odio)} {random.choice(insultos_odio)} y {random.choice(conclusiones_odio)}."
+    elif prob < 0.9:
+        # Estructuras explícitas e implícitas variadas
+        txt = f"{random.choice(sujetos_odio)} debería desaparecer, arruina la comunidad y {random.choice(conclusiones_odio)}."
     else:
-        txt = f"{random.choice(sujetos)} debería desaparecer, arruina la comunidad y nadie lo quiere aquí."
+        # Inyección directa de las frases del mundo real con las que fallaba
+        txt = random.choice(frases_odio_directas)
     
-    # Inyeccion de ruido mediante capitalizacion total periodica
+    # Ruido estructural por capitalización
     if random.random() > 0.8: 
         txt = txt.upper()
         
     registros.append({"texto": txt, "label": 1})
 
-# Generacion y balanceo de la Clase 0: No Odio / Control (6,000 instancias)
-vocabulario_no_odio = vulgari_casual + neutros_academia
+# --- GENERACIÓN DE LA CLASE 0: NO ODIO / CONTROL ---
 while len([r for r in registros if r["label"] == 0]) < mitad_registros:
-    txt = random.choice(vocabulario_no_odio)
+    prob = random.random()
+    if prob < 0.4:
+        txt = random.choice(saludos_y_agradecimientos)
+    elif prob < 0.7:
+        txt = random.choice(vulgari_casual)
+    else:
+        txt = random.choice(neutros_academia)
     
-    # Concatenacion de interjecciones coloquiales peyorativas sin blanco dirigido (ruido estructural)
-    if random.random() > 0.6:
+    # Concatenación de interjecciones coloquiales peyorativas sin blanco dirigido (ruido estructural)
+    if random.random() > 0.7 and txt not in saludos_y_agradecimientos:
         txt = f"{txt} Qué dolor de cabeza, puta madre."
         
     registros.append({"texto": txt, "label": 0})
 
-# Consolidacion, aleatorizacion e instanciacion del DataFrame final
+# Consolidación, aleatorización e instanciacion del DataFrame final
 df_masivo = pd.DataFrame(registros)
 df_masivo = df_masivo.sample(frac=1, random_state=42).reset_index(drop=True)
 df_masivo.to_csv(DATASET_CSV, index=False, encoding='utf-8')
 
-print(f"REGISTRO: Conjunto de datos exportado a '{DATASET_CSV}' ({total_registros} instancias binarias).")
+print(f"REGISTRO: ¡Dataset corregido con éxito! Exportado a '{DATASET_CSV}' ({total_registros} instancias balanceadas).")
