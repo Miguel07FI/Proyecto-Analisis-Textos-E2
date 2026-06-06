@@ -1,4 +1,6 @@
-# Sistema Inteligente de Auditoría de Odio Web (SADOW)
+
+
+# PROYECTO FINAL APIT: Sistema Inteligente de Auditoría de Odio Web (SADOW)
 
 Este proyecto implementa una arquitectura híbrida basada en Aprendizaje Profundo (*Deep Learning*) para la detección semántica de discurso de odio y hostilidad dirigida dentro de tablones de comentarios en plataformas web. El sistema integra el procesamiento de texto mediante una Red Neuronal Convolucional Unidimensional (CNN 1D) con la cuantificación matemática de la densidad de un léxico peyorativo especializado, permitiendo la generación automatizada de informes ejecutivos en formato PDF con métricas analíticas y representaciones gráficas en tiempo real.
 
